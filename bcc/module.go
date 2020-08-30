@@ -66,6 +66,15 @@ const (
 	XDP_FLAGS_MASK  = XDP_FLAGS_UPDATE_IF_NOEXIST | XDP_FLAGS_MODES
 )
 
+const (
+	DEBUG_LLVM_IR uint = 1 << iota
+	DEBUG_BPF
+	DEBUG_PREPROCESSOR
+	DEBUG_SOURCE
+	DEBUG_BPF_REGISTER_STATE
+	DEBUG_BTF
+)
+
 var (
 	defaultCflags []string
 	compileCh     chan compileRequest

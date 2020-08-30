@@ -96,7 +96,7 @@ func newModule(code string, cflags []string, debug uint) *Module {
 	}
 	cs := C.CString(code)
 	defer C.free(unsafe.Pointer(cs))
-	c := C.bpf_module_create_c_from_string(cs, (C.int)(debug), (**C.char)(&cflagsC[0]), C.int(len(cflagsC)), (C.bool)(true), nil)
+	c := C.bpf_module_create_c_from_string(cs, (C.uint)(debug), (**C.char)(&cflagsC[0]), C.int(len(cflagsC)), (C.bool)(true), nil)
 	if c == nil {
 		return nil
 	}

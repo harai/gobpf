@@ -48,6 +48,7 @@ type Module struct {
 type compileRequest struct {
 	code   string
 	cflags []string
+	debug  uint
 	rspCh  chan *Module
 }
 
@@ -80,7 +81,7 @@ func bpfInit() {
 }
 
 // NewModule constructor
-func newModule(code string, cflags []string) *Module {
+func newModule(code string, cflags []string, debug uint) *Module {
 	cflagsC := make([]*C.char, len(defaultCflags)+len(cflags))
 	defer func() {
 		for _, cflag := range cflagsC {
@@ -95,7 +96,7 @@ func newModule(code string, cflags []string) *Module {
 	}
 	cs := C.CString(code)
 	defer C.free(unsafe.Pointer(cs))
-	c := C.bpf_module_create_c_from_string(cs, 2, (**C.char)(&cflagsC[0]), C.int(len(cflagsC)), (C.bool)(true), nil)
+	c := C.bpf_module_create_c_from_string(cs, debug, (**C.char)(&cflagsC[0]), C.int(len(cflagsC)), (C.bool)(true), nil)
 	if c == nil {
 		return nil
 	}
@@ -112,17 +113,17 @@ func newModule(code string, cflags []string) *Module {
 
 // NewModule asynchronously compiles the code, generates a new BPF
 // module and returns it.
-func NewModule(code string, cflags []string) *Module {
+func NewModule(code string, cflags []string, debug uint) *Module {
 	bpfInitOnce.Do(bpfInit)
 	ch := make(chan *Module)
-	compileCh <- compileRequest{code, cflags, ch}
+	compileCh <- compileRequest{code, cflags, debug, ch}
 	return <-ch
 }
 
 func compile() {
 	for {
 		req := <-compileCh
-		req.rspCh <- newModule(req.code, req.cflags)
+		req.rspCh <- newModule(req.code, req.cflags, req.debug)
 	}
 }
 

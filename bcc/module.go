@@ -67,7 +67,7 @@ const (
 )
 
 const (
-	DEBUG_LLVM_IR = uint32(1) << iota
+	DEBUG_LLVM_IR = uint(1) << iota
 	DEBUG_BPF
 	DEBUG_PREPROCESSOR
 	DEBUG_SOURCE
